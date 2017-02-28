@@ -18,21 +18,21 @@ wget https://github.com/libfuse/libfuse/releases/download/fuse-2.9.7/fuse-2.9.7.
 cd fuse-2.9.7/; ./configure; make -j33; sudo make install
 
 ### b. gcc-5/g++-5
-sudo apt-get install -y gcc-5 g++-5
-sudo update-alternatives 
-sudo update-alternatives --remove-all gcc
-sudo update-alternatives --remove-all g++
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
-sudo update-alternatives --config gcc
-sudo update-alternatives --config g++
+sudo apt-get install -y gcc-5 g++-5;
+sudo update-alternatives;
+sudo update-alternatives --remove-all gcc;
+sudo update-alternatives --remove-all g++;
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20;
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20;
+sudo update-alternatives --config gcc;
+sudo update-alternatives --config g++;
 
 ### c. Application binaries
 Cords intends to test different distributed storage systems. You need to install your target distributed storage system. For example, to if you want to test ZooKeeper-3.4.8, you need to:
 
-wget http://www.webhostingreviewjam.com/mirror/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz;tar -xvzf zookeeper-3.4.8.tar.gz
+wget http://www.webhostingreviewjam.com/mirror/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz; tar -xvzf zookeeper-3.4.8.tar.gz
 
-Also, you need to build and install the ZooKeeper binaries (you may need maven for this).
+Also, you need to build and install the ZooKeeper binaries (you will need JDK, JRE, and maven for this). Similarly, you need to build and install all its dependencies. 
 
 ## 3. Examining a distributed storage system
 
@@ -57,4 +57,4 @@ This command will run the supplied workload several times, injecting a different
 
 Aishwarya Ganesan (ag@cs.wisc.edu) and Ramnatthan Alagappan (ra@cs.wisc.edu) are the primary contacts for any questions related to the fault-injection framework and this work in general. 
 
-The CORDS framework and the results are by-products of the distributed storage reliability research project (http://research.cs.wisc.edu/adsl/Publications/) at ADSL at the University of Wisconsin-Madison. Please <a href="http://research.cs.wisc.edu/adsl/Publications/cords-fast17.bib">cite this paper</a>, if you use this work/framework.  
+The CORDS framework and the results are by-products of the distributed storage reliability research project (http://research.cs.wisc.edu/adsl/Publications/) at ADSL at the University of Wisconsin-Madison. Please <a href="http://research.cs.wisc.edu/adsl/Publications/cords-fast17.bib">cite this paper</a>, if you use this framework or results.  
