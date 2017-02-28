@@ -1,0 +1,6 @@
+workload_dir0/zookeeper_server.pid
+workload_dir1/zookeeper_server.pid
+workload_dir2/zookeeper_server.pid
+workload_dir0/zookeeper.out
+workload_dir1/zookeeper.out
+workload_dir2/zookeeper.out
