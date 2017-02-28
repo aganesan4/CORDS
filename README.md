@@ -14,7 +14,7 @@ CORDS is a simple file-system fault injection framework. It has two main compone
 We developed, tested, and ran all our experiments on Ubuntu 14.04 (kernel version: 4.2.0-38-generic). However, the setup should not be very different if you are using any other Linux kernel version or distro. 
 
 ### a. Installing FUSE lib
-wget https://github.com/libfuse/libfuse/releases/download/fuse-2.9.7/fuse-2.9.7.tar.gz; tar -xvzf fuse-2.9.7.tar.gz
+wget https://github.com/libfuse/libfuse/releases/download/fuse-2.9.7/fuse-2.9.7.tar.gz; tar -xvzf fuse-2.9.7.tar.gz;
 cd fuse-2.9.7/; ./configure; make -j33; sudo make install
 
 ### b. gcc-5/g++-5
