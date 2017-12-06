@@ -58,3 +58,5 @@ This command will run the supplied workload several times, injecting a different
 Aishwarya Ganesan (ag@cs.wisc.edu) and Ramnatthan Alagappan (ra@cs.wisc.edu) are the primary contacts for any questions related to the fault-injection framework and this work in general. 
 
 The CORDS framework and the results are by-products of the distributed storage reliability research project (http://research.cs.wisc.edu/adsl/Publications/) at ADSL at the University of Wisconsin-Madison. Please <a href="http://research.cs.wisc.edu/adsl/Publications/cords-fast17.bib">cite this paper</a>, if you use this framework or results.  
+
+If you want to use CORDS for your data store, or if you wish to get the workloads and testing results for a system that we have discussed in the paper, please drop us a mail at ag@cs.wisc.edu or ra@cs.wisc.edu.
