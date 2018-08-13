@@ -186,7 +186,7 @@ def cords_check():
 
 				workload_command_curr = workload_command
 				for ddc in data_dir_curr:
-					workload_command_curr += " " + ddc + " "
+					workload_command_curr += " cords " + ddc + " "
 
 				workload_command_curr += log_dir_path + " "
 

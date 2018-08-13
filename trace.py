@@ -81,7 +81,7 @@ for i in range(0, machine_count):
 os.system('sleep 1')
 
 for i in range(0, machine_count):
-	workload_command +=  " " + data_dir_mount_points[i] + " "
+	workload_command +=  " trace " + data_dir_mount_points[i] + " "
 os.system(workload_command)
 
 for mp in data_dir_mount_points:
