@@ -1,0 +1,3 @@
+./errfs
+*workload_dir*
+systems/*/trace*
