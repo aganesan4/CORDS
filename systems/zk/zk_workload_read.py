@@ -8,75 +8,69 @@ import logging
 from kazoo.client import KazooClient
 from kazoo.client import KazooRetry
 
-logging.basicConfig()
+def invoke_cmd(cmd):
+	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	out, err = p.communicate()
+	return (out, err)
 
+#ZooKeeper-related Config
+logging.basicConfig()
 host_list = ['127.0.0.2', '127.0.0.3', '127.0.0.4']
 port_list = [2182, 2183, 2184]
-
 config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.2:2888:3888\nserver.2=127.0.0.3:2889:3889\nserver.3=127.0.0.4:2890:3890\npreAllocSize=40'''
 
+#ZooKeeper code home, log file names
 ZK_HOME = '~/zookeeper-3.4.12/'
-CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 zoo_logfile_name = 'zookeeper.out'
 
-os.system("pkill -f \'java.*zoo*\'")
+#Kill all Zookeeper Processes
 os.system("pkill -f \'java.*zoo*\'")
 os.system("pkill -f \'java.*zoo*\'")
 
 server_dirs = []
 log_dir = None
 
-print sys.argv
 assert len(sys.argv) >= 4
+
+# The CORDS framework passes the following arguments to the workload program
+# zk_workload_read.py trace/cords workload_dir1 workload_dir2 .. workload_dirn log_dir
+
+# For ZooKeeper we have three servers and hence three directories
 for i in range(2, 5):
 	server_dirs.append(sys.argv[i]) 
 
-print server_dirs
 #if logdir specified
-if len(sys.argv) == 6:
+if len(sys.argv) >= 6:
 	log_dir = sys.argv[-1]
 
 # For now assume only 3 nodes
-server_config0 = (config_info) % (server_dirs[0], port_list[0], )
-server_config1 = (config_info) % (server_dirs[1], port_list[1], )
-server_config2 = (config_info) % (server_dirs[2], port_list[2], )
 
-config_files = [ os.path.join(CURR_DIR, 'zoo0.workload.cfg'), os.path.join(CURR_DIR, 'zoo1.workload.cfg'), os.path.join(CURR_DIR, 'zoo2.workload.cfg')]
-with open(config_files[0], 'w') as f:
-	f.write(server_config0)
+# Write the config files with the correct workload directories
+server_configs = []
+config_files = []
+CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+for i in [0, 1, 2]:
+	server_configs.append((config_info) % (server_dirs[i], port_list[i], ))
+	config_files.append((os.path.join(CURR_DIR, 'zoo' + str(i) + '.workload.cfg')))
+	with open(config_files[i], 'w') as f:
+		f.write(server_configs[i])
 
-with open(config_files[1], 'w') as f:
-	f.write(server_config1)
 
-with open(config_files[2], 'w') as f:
-	f.write(server_config2)
-
-node_start0 = os.path.join(ZK_HOME, 'bin/zkServer.sh ') + ('start %s &') % (config_files[0],)
-node_start1 = os.path.join(ZK_HOME, 'bin/zkServer.sh ') + ('start %s &') % (config_files[1],)
-node_start2 = os.path.join(ZK_HOME, 'bin/zkServer.sh ') + ('start %s &') % (config_files[2],)
-
-# chdir here so that zk can create the log here in this directory
-os.chdir(server_dirs[0]) 
-os.system(node_start0)
-
-os.chdir(server_dirs[1]) 
-os.system(node_start1)
-
-os.chdir(server_dirs[2]) 
-os.system(node_start2)
-
+# Start the ZooKeeper cluster
+for i in [0, 1, 2]:
+	# chdir here so that zk can create the log here in this directory
+	os.chdir(server_dirs[i]) 
+	os.system(os.path.join(ZK_HOME, 'bin/zkServer.sh ') + ('start %s &') % (config_files[i],))
 os.chdir(CURR_DIR) 
 
-def invoke_cmd(cmd):
-	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	out, err = p.communicate()
-	return (out, err)
+time.sleep(3)
 
 out = ''
 err = ''
-time.sleep(3)
 present_value = 'a' * 8192 
 
+
+# Get state of ZooKeeper nodes before reading data
 if log_dir is not None:
 	client_log_file = os.path.join(log_dir, 'log-client')
 	with open(client_log_file, 'w') as f:
@@ -96,9 +90,12 @@ if log_dir is not None:
 		f.write(to_write)
 		f.write('----------------------------------------------\n')
 
+
 out = ''
 err = ''
 
+
+# Issue Reads on all the nodes in the cluster and check its value
 for server_index in range(1, 4):
 	returned = None
 	zk = None
@@ -111,11 +108,15 @@ for server_index in range(1, 4):
 		returned, stat = zk.get("/zk_test")
 		zk.stop()
 		returned = returned.strip().replace('\n', '')
-		out += 'Successful get at server ' + str(server_index - 1) + ' Proper:' + str(returned == present_value)
-		break
+		out += 'Successful get at server ' + str(server_index - 1) + ' Proper:' + str(returned == present_value)  + '\n'
 	except Exception as e:
 		err += 'Could not get at server ' + str(server_index - 1) + '\t:' + str(e) + '\n' 
 
+
+print out
+print err
+
+# Get state of ZooKeeper nodes after reading data
 if log_dir is not None:
 	assert os.path.isdir(log_dir) and os.path.exists(log_dir)
 	client_log_file = os.path.join(log_dir, 'log-client')
@@ -149,12 +150,15 @@ if log_dir is not None:
 		f.write(to_write)
 
 time.sleep(3)
+# Kill the ZooKeeper nodes
 os.system("pkill -f \'java.*zoo*\'")
 time.sleep(1)
+
+
 os.system("sudo chown -R $USER:$USER workload_dir*")
-os.system('rm -rf ' + config_files[0])
-os.system('rm -rf ' + config_files[1])
-os.system('rm -rf ' + config_files[2])
+
+for i in [0, 1, 2]:
+	os.system('rm -rf ' + config_files[i])
 
 # if log_dir specified
 if log_dir is not None:
