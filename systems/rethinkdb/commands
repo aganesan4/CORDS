@@ -1,0 +1,3 @@
+sudo trace.py --trace_files ./systems/rethinkdb/trace0 ./systems/rethinkdb/trace1 ./systems/rethinkdb/trace2 --data_dirs ./systems/rethinkdb/workload_dir0 ./systems/rethinkdb/workload_dir1/ ./systems/rethinkdb/workload_dir2/ --workload_command ./systems/rethinkdb/rethink_workload_read.py
+
+sudo cords.py --trace_files ./systems/rethinkdb/trace0 ./systems/rethinkdb/trace1 ./systems/rethinkdb/trace2 --data_dirs ./systems/rethinkdb/workload_dir0 ./systems/rethinkdb/workload_dir1/ ./systems/rethinkdb/workload_dir2/ --workload_command ./systems/rethinkdb/rethink_workload_read.py
