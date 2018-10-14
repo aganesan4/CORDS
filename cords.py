@@ -184,9 +184,9 @@ def cords_check():
 					data_dir_curr.append(data_dir_mount_points[mach] if corrupt_machine == mach else data_dirs[mach])
 				assert len(data_dir_curr) == len(machines)				
 
-				workload_command_curr = workload_command
+				workload_command_curr = workload_command + " cords "
 				for ddc in data_dir_curr:
-					workload_command_curr += " cords " + ddc + " "
+					workload_command_curr +=  ddc + " "
 
 				workload_command_curr += log_dir_path + " "
 

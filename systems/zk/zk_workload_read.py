@@ -13,9 +13,9 @@ logging.basicConfig()
 host_list = ['127.0.0.2', '127.0.0.3', '127.0.0.4']
 port_list = [2182, 2183, 2184]
 
-config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.2:2888:3888\nserver.2=127.0.0.3:2889:3889\nserver.3=127.0.0.4:2890:3890'''
-ZK_HOME = '/mnt/data1/scratch/work/adsl-work/d2s/applications/zookeeper-3.4.8/'
-ZK_HOME_BIN = '/mnt/data1/scratch/work/adsl-work/d2s/applications/zookeeper-3.4.8/bin'
+config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.2:2888:3888\nserver.2=127.0.0.3:2889:3889\nserver.3=127.0.0.4:2890:3890\npreAllocSize=40'''
+
+ZK_HOME = '~/zookeeper-3.4.12/'
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 zoo_logfile_name = 'zookeeper.out'
 
@@ -26,12 +26,14 @@ os.system("pkill -f \'java.*zoo*\'")
 server_dirs = []
 log_dir = None
 
+print sys.argv
 assert len(sys.argv) >= 4
-for i in range(1, 4):
+for i in range(2, 5):
 	server_dirs.append(sys.argv[i]) 
 
+print server_dirs
 #if logdir specified
-if len(sys.argv) == 5:
+if len(sys.argv) == 6:
 	log_dir = sys.argv[-1]
 
 # For now assume only 3 nodes
@@ -149,7 +151,7 @@ if log_dir is not None:
 time.sleep(3)
 os.system("pkill -f \'java.*zoo*\'")
 time.sleep(1)
-os.system("sudo chown -R ram:ram workload_dir*")
+os.system("sudo chown -R $USER:$USER workload_dir*")
 os.system('rm -rf ' + config_files[0])
 os.system('rm -rf ' + config_files[1])
 os.system('rm -rf ' + config_files[2])
