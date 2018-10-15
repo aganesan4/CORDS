@@ -27,7 +27,7 @@ from collections import defaultdict
 import subprocess
 import argparse
 
-remote_user_name = 'ram'
+remote_user_name = 'aishwarya'
 
 def invoke_remote_cmd(machine_ip, command):
 	cmd = 'ssh {0}@{1} \'{2}\''.format(remote_user_name, machine_ip, command)

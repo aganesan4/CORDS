@@ -30,7 +30,7 @@ import time
 from threading import Timer
 
 BLOCKSIZE = 4096
-remote_user_name = 'ram'
+remote_user_name = 'aishwarya'
 ERRFS_HOME = os.path.dirname(os.path.realpath(__file__))
 fuse_command_err = 'nohup ' + ERRFS_HOME + "/errfs -f -omodules=subdir,subdir=%s %s err %s %s %s > /dev/null 2>&1 &"
 fuse_unmount_command = "fusermount -u %s > /dev/null"

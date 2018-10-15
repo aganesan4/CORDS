@@ -8,12 +8,12 @@ import logging
 from kazoo.client import KazooClient
 from kazoo.client import KazooRetry
 
-remote_user_name = 'ram'
-cords_dir = '/home/ram/CORDS'
+remote_user_name = 'aishwarya'
+cords_dir = '/home/aishwarya/CORDS'
 workload_home = cords_dir + '/systems/remote_zk/'
 
 #ZooKeeper code home, log file names
-zk_home = '/home/ram/zookeeper/'
+zk_home = '/home/aishwarya/zookeeper/'
 zoo_logfile_name = 'zookeeper.out'
 
 def invoke_cmd(cmd):
