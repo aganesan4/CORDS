@@ -8,20 +8,18 @@ import logging
 from kazoo.client import KazooClient
 from kazoo.client import KazooRetry
 
-remote_user_name == 'aganesan'
-remote_cords_dir = '~/CORDS'
-workload_home = remote_cords_dir + '/systems/remote_zk/'
+remote_user_name = 'ram'
+cords_dir = '/home/ram/CORDS'
+workload_home = cords_dir + '/systems/remote_zk/'
 
 #ZooKeeper code home, log file names
-zk_home = '~/zookeeper/'
-zoo_logfile_name = 'zookeeper.out'
-
+zk_home = '/home/ram/zookeeper/'
 servers = ['1', '2', '3']
 
 ips = {}
-ips['1'] = 'c220g1-030613.wisc.cloudlab.us'
-ips['2'] = 'c220g1-030606.wisc.cloudlab.us'
-ips['3'] = 'c220g1-030617.wisc.cloudlab.us'
+ips['1'] = 'c220g1-030825.wisc.cloudlab.us'
+ips['2'] = 'c220g1-030828.wisc.cloudlab.us'
+ips['3'] = 'c220g1-030829.wisc.cloudlab.us'
 
 def invoke_cmd(cmd):
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 	stderr=subprocess.PIPE)
@@ -42,15 +40,9 @@ def copy_file_remote(machine_ip, from_file_path, to_file_path):
 	cmd = 'scp {0} {1}@{2}:{3}'.format(from_file_path, remote_user_name, machine_ip, to_file_path)
 	os.system(cmd)
 
-internal_ips = {}
-internal_ip_string = ''
+ip_string = ''
 for server in servers:
-	internal_ip = invoke_remote_cmd(ips[server], 'ifconfig | grep inet | grep -v inet6 | grep Bcast | grep 10\.10')[0]		
-	internal_ip = [i for i in internal_ip.split(' ') if len(i) > 0]
-	print internal_ip
-	assert len(internal_ip) == 4
-	internal_ips[server] = internal_ip[1].split(':')[1]
-	internal_ip_string += 'server.' + server + '={0}'.format(internal_ips[server]) + ':2888:3888' + '\n'
+	ip_string += 'server.' + server + '={0}'.format(ips[server]) + ':2888:3888' + '\n'
 
 #ZooKeeper-related Config
 logging.basicConfig()
@@ -58,7 +50,7 @@ conf_string = '''tickTime=2000
 dataDir={0}
 clientPort=2181
 initLimit=5
-syncLimit=2''' + '''\n''' + internal_ip_string + '''preAllocSize=40'''
+syncLimit=2''' + '''\n''' + ip_string + '''preAllocSize=40'''
 
 # Create a clean start state
 # Kill Zookeeper
@@ -93,10 +85,10 @@ for i in servers:
 	run_remote(ips[i], remote_command)
 
 
-os.system(sleep 2)
+os.system('sleep 2')
 
 # Insert key value pairs to ZooKeeper
-ALLSERVERS ="{0}:2181,{1}:2181,{2}:2181".format(internal_ips['1'], internal_ips['2'], internal_ips['3'])
+ALLSERVERS ="{0}:2181,{1}:2181,{2}:2181".format(ips['1'], ips['2'], ips['3'])
 returned = None
 zk = None
 kz_retry = KazooRetry(max_tries=1, delay=0.25, backoff=2)
