@@ -30,15 +30,15 @@ import time
 from threading import Timer
 
 BLOCKSIZE = 4096
-
+remote_user_name = 'ram'
 ERRFS_HOME = os.path.dirname(os.path.realpath(__file__))
-fuse_command_err = ERRFS_HOME + "/errfs -f -omodules=subdir,subdir=%s %s err %s %s %s &"
+fuse_command_err = 'nohup ' + ERRFS_HOME + "/errfs -f -omodules=subdir,subdir=%s %s err %s %s %s > /dev/null 2>&1 &"
 fuse_unmount_command = "fusermount -u %s > /dev/null"
 uppath = lambda _path, n: os.sep.join(_path.split(os.sep)[:-n])
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--trace_files', nargs='+', required = True, help = 'Trace file paths')
-parser.add_argument('--machines_ips', nargs='+', required = True, help = 'Machine ips')
+parser.add_argument('--machine_ips', nargs='+', required = True, help = 'Machine ips')
 parser.add_argument('--data_dirs', nargs='+', required = True, help = 'Location of data directories')
 parser.add_argument('--workload_command', type = str)
 parser.add_argument('--cords_results_base_dir', type = str, default='/run/shm', help = 'Location for checker state and results')
@@ -100,6 +100,7 @@ assert len(trace_files) == len(data_dirs) and len(trace_files) == len(data_dir_s
 workload_command = args.workload_command
 checker_command = args.checker_command
 cords_results_base_dir = args.cords_results_base_dir
+machine_ips = args.machine_ips
 
 os.system('rm -rf ' + cords_results_base_dir+'/*')
 
@@ -199,6 +200,9 @@ def cords_check():
 				for ddc in data_dir_curr:
 					workload_command_curr +=  ddc + " "
 
+				for mach in machines:
+					workload_command_curr +=  machine_ips[mach] + " "
+
 				workload_command_curr += log_dir_path + " "
 
 				os.system("rm -rf " + log_dir_path)
@@ -230,8 +234,8 @@ def cords_check():
 
 				count += 1
 				print 'States completed:' + str(count) + '/' + str(total)
-				#if count == 1:
-				#	return
+				if count == 1:
+					return
 
 start_test = time.time()
 cords_check()

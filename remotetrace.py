@@ -33,7 +33,6 @@ def invoke_remote_cmd(machine_ip, command):
 	cmd = 'ssh {0}@{1} \'{2}\''.format(remote_user_name, machine_ip, command)
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 	stderr=subprocess.PIPE)
 	out, err = p.communicate()
-	print out,err
 	return (out, err)
 
 def copy_file_from_remote(machine_ip, from_file_path, to_file_path):
