@@ -1,4 +1,4 @@
-##!/usr/bin/env  python
+#!/usr/bin/env  python
 
 import sys
 import os
@@ -44,7 +44,7 @@ logging.basicConfig()
 
 
 log_dir = None
-servers = ['1', '2', '3']
+servers = ['0', '1', '2']
 ips = {}
 server_dirs = {}
 
@@ -54,7 +54,7 @@ assert len(sys.argv) >= 7
 # zk_workload_read.py trace/cords workload_dir1 workload_dir2 .. workload_dirn remote_ip1 remote_ip2 .. remote_ipn [log_dir]
 # For now assume only 3 nodes
 for i in range(1, 4):
-	ips[str(i)] = sys.argv[4 + i]
+	ips[str(i-1)] = sys.argv[4 + i]
 ip_string = ''
 for server in servers:
 	ip_string += 'server.' + server + '={0}'.format(ips[server]) + ':2888:3888' + '\n'
@@ -66,7 +66,7 @@ initLimit=5
 syncLimit=2''' + '''\n''' + ip_string + '''preAllocSize=40'''
 # For ZooKeeper we have three servers and hence three directories
 for i in range(1, 4):
-	server_dirs[str(i)] = sys.argv[i + 1]
+	server_dirs[str(i-1)] = sys.argv[i + 1]
 
 #if logdir specified
 if len(sys.argv) >= 9:
@@ -114,7 +114,7 @@ err = ''
 
 
 # Issue Reads on all the nodes in the cluster and check its value
-for server_index in range(1, 4):
+for server_index in range(0, 3):
 	returned = None
 	zk = None
 	connect_string = ips[str(server_index)] + ':2181'

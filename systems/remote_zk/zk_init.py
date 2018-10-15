@@ -14,12 +14,12 @@ workload_home = cords_dir + '/systems/remote_zk/'
 
 #ZooKeeper code home, log file names
 zk_home = '/home/ram/zookeeper/'
-servers = ['1', '2', '3']
+servers = ['0', '1', '2']
 
 ips = {}
-ips['1'] = 'c220g1-030825.wisc.cloudlab.us'
-ips['2'] = 'c220g1-030828.wisc.cloudlab.us'
-ips['3'] = 'c220g1-030829.wisc.cloudlab.us'
+ips['0'] = 'c220g1-030825.wisc.cloudlab.us'
+ips['1'] = 'c220g1-030828.wisc.cloudlab.us'
+ips['2'] = 'c220g1-030829.wisc.cloudlab.us'
 
 def invoke_cmd(cmd):
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 	stderr=subprocess.PIPE)
@@ -88,7 +88,7 @@ for i in servers:
 os.system('sleep 2')
 
 # Insert key value pairs to ZooKeeper
-ALLSERVERS ="{0}:2181,{1}:2181,{2}:2181".format(ips['1'], ips['2'], ips['3'])
+ALLSERVERS ="{0}:2181,{1}:2181,{2}:2181".format(ips['0'], ips['1'], ips['2'])
 returned = None
 zk = None
 kz_retry = KazooRetry(max_tries=1, delay=0.25, backoff=2)
