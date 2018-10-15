@@ -29,12 +29,19 @@ import argparse
 
 remote_user_name = 'ram'
 
-def run_remote(machine_ip, command):
+def invoke_remote_cmd(machine_ip, command):
 	cmd = 'ssh {0}@{1} \'{2}\''.format(remote_user_name, machine_ip, command)
+	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 	stderr=subprocess.PIPE)
+	out, err = p.communicate()
+	print out,err
+	return (out, err)
+
+def copy_file_from_remote(machine_ip, from_file_path, to_file_path):
+	cmd = 'scp {0}@{1}:{2} {3}'.format(remote_user_name, machine_ip, from_file_path, to_file_path)
 	os.system(cmd)
 
 ERRFS_HOME = os.path.dirname(os.path.realpath(__file__))
-fuse_command_trace = ERRFS_HOME + "/errfs -f -omodules=subdir,subdir=%s %s trace %s &"
+fuse_command_trace = 'nohup ' + ERRFS_HOME + "/errfs -f -omodules=subdir,subdir=%s %s trace %s > /dev/null 2>&1 &"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--trace_files', nargs='+', required = True, help = 'Trace file paths')
@@ -53,6 +60,7 @@ for i in range(0, len(args.data_dirs)):
 trace_files = args.trace_files
 data_dirs = args.data_dirs
 ignore_file = args.ignore_file
+machines = args.machines
 
 assert len(trace_files) == len(data_dirs)
 machine_count = len(trace_files)
@@ -69,16 +77,16 @@ for i in range(0, machine_count):
 	command = "rm -rf " + data_dir_snapshots[i] + ";"
 	command += "rm -rf " + data_dir_mount_points[i] + ";"
 	command += "mkdir " + data_dir_mount_points[i] + ";"
-	run_remote(machines[i], command)
+	invoke_remote_cmd(machines[i], command)
 
 for i in range(0, machine_count):
 	command =  "cp -R " + data_dirs[i] + " " + data_dir_snapshots[i] + ";"
 	command += "rm -rf " + trace_files[i]
-	run_remote(machines[i], command)
+	invoke_remote_cmd(machines[i], command)
 
 for i in range(0, machine_count):
 	command = fuse_command_trace%(data_dirs[i], data_dir_mount_points[i], trace_files[i])
-	run_remote(machines[i], command)
+	invoke_remote_cmd(machines[i], command)
 
 os.system('sleep 1')
 
@@ -93,7 +101,7 @@ os.system(workload_command)
 
 i = 0
 for mp in data_dir_mount_points:
-	run_remote(machines[i], 'fusermount -u ' + mp + '; sleep 1' + '; killall errfs >/dev/null 2>&1')
+	invoke_remote_cmd(machines[i], 'fusermount -u ' + mp + '; sleep 1' + '; killall errfs >/dev/null 2>&1')
 	i += 1
 
 to_ignore_files = []

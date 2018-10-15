@@ -55,6 +55,8 @@ assert len(sys.argv) >= 7
 # For now assume only 3 nodes
 for i in range(1, 4):
 	ips[str(i-1)] = sys.argv[4 + i]
+
+print ips
 ip_string = ''
 for server in servers:
 	ip_string += 'server.' + server + '={0}'.format(ips[server]) + ':2888:3888' + '\n'
@@ -125,9 +127,9 @@ for server_index in range(0, 3):
 		returned, stat = zk.get("/zk_test")
 		zk.stop()
 		returned = returned.strip().replace('\n', '')
-		out += 'Successful get at server ' + str(server_index - 1) + ' Proper:' + str(returned == present_value)  + '\n'
+		out += 'Successful get at server ' + str(server_index) + ' Proper:' + str(returned == present_value)  + '\n'
 	except Exception as e:
-		err += 'Could not get at server ' + str(server_index - 1) + '\t:' + str(e) + '\n' 
+		err += 'Could not get at server ' + str(server_index) + '\t:' + str(e) + '\n' 
 
 print out
 print err
