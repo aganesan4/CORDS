@@ -36,16 +36,12 @@ def copy_file_to_remote(machine_ip, from_file_path, to_file_path):
 	os.system(cmd)
 
 def copy_file_from_remote(machine_ip, from_file_path, to_file_path):
-	cmd = 'scp {1}@{2}:{0} {1}'.format(from_file_path, remote_user_name, machine_ip, to_file_path)
+	cmd = 'scp {0}@{1}:{2} {3}'.format(remote_user_name, machine_ip, from_file_path, to_file_path)
 	os.system(cmd)
 
 #ZooKeeper-related Config
 logging.basicConfig()
-conf_string = '''tickTime=2000
-dataDir={0}
-clientPort=2181
-initLimit=5
-syncLimit=2''' + '''\n''' + ip_string + '''preAllocSize=40'''
+
 
 log_dir = None
 servers = ['1', '2', '3']
@@ -63,6 +59,11 @@ ip_string = ''
 for server in servers:
 	ip_string += 'server.' + server + '={0}'.format(ips[server]) + ':2888:3888' + '\n'
 
+conf_string = '''tickTime=2000
+dataDir={0}
+clientPort=2181
+initLimit=5
+syncLimit=2''' + '''\n''' + ip_string + '''preAllocSize=40'''
 # For ZooKeeper we have three servers and hence three directories
 for i in range(1, 4):
 	server_dirs[str(i)] = sys.argv[i + 1]
@@ -87,7 +88,7 @@ for i in servers:
 for i in servers:
 	command = '''{0}/bin/zkServer.sh start'''.format(zk_home)			
 	cfg_file = '{0}/zoo{1}.cfg'.format(workload_home, str(i))
-	remote_command = 'cd {0};{2} {3} > ./zookeeper.out 2>&1 &'.format(server_dirs[i], command, cfg_file)
+	remote_command = 'cd {0};{1} {2} > ./zookeeper.out 2>&1 &'.format(server_dirs[i], command, cfg_file)
 	run_remote(ips[i], remote_command)
 
 time.sleep(3)
@@ -105,7 +106,7 @@ if log_dir is not None:
 		for i in servers:
 			out, err = invoke_remote_cmd(ips[i], 'ps aux | grep zoo')
 			status.append('zoo' + str(i) + '.cfg' in out)
-		f.write(str(status))
+		f.write(str(status) + '\n')
 		f.write('----------------------------------------------\n')
 
 out = ''
@@ -133,13 +134,13 @@ print err
 
 if log_dir is not None:
 	client_log_file = os.path.join(log_dir, 'log-client')
-	with open(client_log_file, 'w') as f:
+	with open(client_log_file, 'a') as f:
 		f.write('After workload\n')
 		status = []
 		for i in servers:
 			out, err = invoke_remote_cmd(ips[i], 'ps aux | grep zoo')
 			status.append('zoo' + str(i) + '.cfg' in out)
-		f.write(str(status))
+		f.write(str(status) + '\n')
 		f.write('----------------------------------------------\n')
 
 # Kill all ZooKeeper instances on the remote nodes
